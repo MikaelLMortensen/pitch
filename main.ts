@@ -34,16 +34,10 @@ basic.forever(function () {
         if (leftSpeed > 100){
             leftSpeed = 100
         }
-        if (leftSpeed < 0){
-            leftSpeed = 0
-        }
 
         rightSpeed = absPitch + Math.round(absRoll / 5)
         if (rightSpeed > 100) {
             rightSpeed = 100
-        }
-        if (rightSpeed < 0) {
-            rightSpeed = 0
         }
         radio.sendString("" + leftSpeed.toString() + ";" + rightSpeed.toString())
         basic.pause(50)
