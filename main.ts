@@ -9,30 +9,59 @@ input.onButtonPressed(Button.B, function () {
     radio.sendValue("FL", 50)
 })
 radio.onReceivedValue(function (name, value) {
-    basic.showNumber(value)
+    basic.showString(name +  ":" + value.toString())
 })
+
 let pitch = 0
 let absPitch = 0
 let absRoll = 0
 let leftSpeed = 0
 let rightSpeed = 0
+let oldRoll = 0
+let oldPitch = 0
 radio.setGroup(256)
 basic.forever(function () {
     absRoll = input.rotation(Rotation.Roll)
-    absRoll = (absRoll + 180)
-    absRoll = Math.round(absRoll / 3.6)
-
     absPitch = input.rotation(Rotation.Pitch)
-    absPitch = absPitch + 180
-    absPitch = Math.round(absPitch / 3.6)
-    pitch = absRoll
-    if (pitch >= 0) {
-        radio.sendValue("FL", pitch)
-        radio.sendValue("FR", pitch)
-    } else {
-        radio.sendValue("BL", pitch)
-        radio.sendValue("BR", pitch)
-        basic.showNumber(pitch)
-        basic.pause(1000)
-    }
+
+    if (oldPitch != absPitch || oldRoll != absRoll)
+    {
+        oldPitch = absPitch 
+        oldRoll = absRoll
+
+        leftSpeed = absPitch - absRoll
+        rightSpeed = absPitch + absRoll
+
+        if (leftSpeed != 0){
+            if (leftSpeed >= 0) {
+                if (leftSpeed > 100){
+                    leftSpeed = 100
+                }
+                radio.sendValue("FL", leftSpeed)
+                basic.showString("FL:" + leftSpeed.toString())
+            } else {
+                if (leftSpeed < -100){
+                    leftSpeed = -100
+                }
+                leftSpeed = leftSpeed * - 1
+                radio.sendValue("BL", leftSpeed)
+                basic.showString("BL:" + leftSpeed.toString())
+            }
+            if (rightSpeed >= 0) {
+                if (rightSpeed > 100){
+                    rightSpeed = 100
+                }
+                radio.sendValue("FR", rightSpeed)
+                basic.showString("FR:" + rightSpeed.toString())
+            } else {
+                if (rightSpeed < -100){
+                    rightSpeed = -100
+                }
+                rightSpeed = rightSpeed * - 1
+                radio.sendValue("BR", rightSpeed)
+                basic.showString("BR:" + rightSpeed.toString())
+            }
+            basic.pause(1000)
+        }
+    } 
 })
